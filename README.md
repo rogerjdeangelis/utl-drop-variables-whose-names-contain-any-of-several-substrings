@@ -4,6 +4,15 @@ Drop variables whose names contain any of several substrings.
     Drop variables whose names contain any of several substrings
 
     Problem: Drop variable names that contain either 'PP' or 'MEAN'
+    
+    ee reecent elegant solution by Bart on the end;
+    It is nice to see experimentation with DOSUBL because it is not obvious to all the
+    potential applications. My aging brain is not as nimble as it used to be.
+    Thanks for re-aquainting me with the tslit macro
+
+    Bartosz Jablonski
+    yabwon@gmail.com
+
 
     github
     https://tinyurl.com/y8aggy3b
@@ -295,4 +304,71 @@ Drop variables whose names contain any of several substrings.
           drop = &list.
           );
     run;
+
+
+    *____             _
+    | __ )  __ _ _ __| |_
+    |  _ \ / _` | '__| __|
+    | |_) | (_| | |  | |_
+    |____/ \__,_|_|   \__|
+
+    ;
+
+    see reecent elegant solution by Bart on the end;
+    It is nice to see experimentation with DOSUBL because it is not obvious to all the
+    potential applications. My aging brain is not as nimble as it used to be.
+    Thanks for re-aquainting me with the tslit macro
+
+    Bartosz Jablonski
+    yabwon@gmail.com
+
+
+
+
+    The alist macro is usefull all by itself and I added to github and my sutocall kibrary, thanks.
+    I would have responed earlier but I had a long flight and I am recovering from jet lag.
+
+
+
+    Roger,
+
+    maybe you will like following "dosubl"-ish version
+
+    Bart
+
+
+    %MACRO utl_aLIST_(ds = sashelp.class, prx = /ag|he/i);
+      /*
+         Macro to create list of variable names that satisfy a regular expression
+         macro by
+         Bartosz Jablonski
+         yabwon@gmail.com
+      */
+      proc transpose
+        data = &ds.(obs = 0)
+        out = _TMP_(keep = _name_ where = ( PRXMATCH(%tslit(&prx.), _name_) ))
+      ;
+        var _all_;
+      run;
+      %global list;
+      proc sql noprint;
+        select _name_
+        into :list separated by ' '
+        from _tmp_;
+      quit;
+
+    /*
+    Application
+    options mprint symbolgen;
+    %let ds = sashelp.class;
+    %let prx = /ag|he/i;
+    data want;
+      set &ds.(
+          %let rc = %sysfunc(dosubl('%utl_aLIST_(ds=&ds., prx=&prx.)'));
+          drop = &list.
+          );
+    run;
+    */
+    %MEND utl_aLIST_;
+
 
